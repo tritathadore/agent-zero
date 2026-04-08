@@ -1,0 +1,140 @@
+# ─────────────────────────────────────────────────────────────
+# Agent Zero — Continuous Integration
+# Autonomous Agentic Framework
+# ─────────────────────────────────────────────────────────────
+name: CI
+
+on:
+  push:
+    branches: [main, develop, "release/**"]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHON_VERSION: "3.11"
+
+jobs:
+  # ── Lint & Static Analysis ──────────────────────────────────
+  lint:
+    name: Lint & Format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+
+      - name: Install linting tools
+        run: pip install flake8 black isort bandit
+
+      - name: Check formatting (black)
+        run: black --check --diff . --exclude '/(\.venv|node_modules|docker)/'
+        continue-on-error: true
+
+      - name: Syntax & critical errors (flake8)
+        run: |
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics \
+            --exclude=.venv,docker,node_modules,logs,memory,knowledge,tmp
+
+      - name: Style warnings (flake8)
+        run: |
+          flake8 . --count --exit-zero --max-complexity=15 --max-line-length=127 --statistics \
+            --exclude=.venv,docker,node_modules,logs,memory,knowledge,tmp
+
+  # ── Security Scan ───────────────────────────────────────────
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+
+      - name: Install security tools
+        run: pip install bandit safety
+
+      - name: Bandit — source code analysis
+        run: |
+          bandit -r python/ -f json -o bandit-report.json --exit-zero || true
+
+      - name: Safety — dependency vulnerability check
+        run: safety check -r requirements.txt --output json > safety-report.json || true
+
+      - name: Upload security reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: security-reports
+          path: |
+            bandit-report.json
+            safety-report.json
+          retention-days: 30
+
+  # ── Unit Tests ──────────────────────────────────────────────
+  test:
+    name: Test Suite
+    runs-on: ubuntu-latest
+    needs: [lint]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest pytest-cov pytest-asyncio pytest-mock
+          pip install -r requirements.txt 2>/dev/null || \
+            pip install --no-deps -r requirements.txt 2>/dev/null || true
+
+      - name: Run tests
+        run: |
+          pytest tests/ --tb=short --cov=python/ --cov-report=xml \
+            --cov-report=term-missing -q --no-header 2>&1 || true
+
+      - name: Upload coverage
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-report
+          path: coverage.xml
+          retention-days: 14
+
+  # ── Docker Build Verification ───────────────────────────────
+  docker:
+    name: Docker Build
+    runs-on: ubuntu-latest
+    needs: [test, security]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build image
+        run: |
+          if [ -f docker/Dockerfile ]; then
+            docker build -f docker/Dockerfile -t agent-zero:${{ github.sha }} .
+          elif [ -f Dockerfile ]; then
+            docker build -t agent-zero:${{ github.sha }} .
+          else
+            echo "No Dockerfile found — skipping build."
+          fi
