@@ -1,0 +1,75 @@
+{
+  "session": "session_01LoCMvLu3iSSaB4gFuZsLde",
+  "date": "2026-04-08/2026-04-09",
+  "repositories": {
+    "byronic-azure/pyraclaw": {
+      "branch": "claude/improve-user-experience-bAyt5",
+      "pr": 1,
+      "pr_merge_sha": "7b32030ae4f540f9b6ea3230955d38e048e8f8c1",
+      "commits": [
+        {
+          "sha": "57eabf5079bd8320d6890d4d32f8577635ef5a0b",
+          "timestamp": "2026-04-08T20:22:31Z",
+          "message": "Add CI/CD pipelines for Jenkins, GitLab, and enhanced GitHub Actions"
+        },
+        {
+          "sha": "6ad864b6184519e86df9a16d57853ef39b0e88b4",
+          "timestamp": "2026-04-09T01:41:46Z",
+          "message": "Upgrade CI/CD to production-grade with QDP sealing and RSFS quality gates"
+        },
+        {
+          "sha": "0c3fe4a3b6ccf01450b10ddf8e2f28a5f6553cea",
+          "timestamp": "2026-04-09T04:18:12Z",
+          "message": "Add Diamond Army forge script and update GPU deployment with Brev fleet"
+        },
+        {
+          "sha": "eaf95714febd7712d1daf2d3c3a63b5a2c8a6576",
+          "timestamp": "2026-04-09T06:11:23Z",
+          "message": "Rewrite pyraclaw_forge.sh v2.0.0 — production Diamond Army forge"
+        },
+        {
+          "sha": "024d4abd2541c0b87aecca7de116ee6cb446b60d",
+          "timestamp": "2026-04-09T09:20:01Z",
+          "message": "Fix manifest path for Windows/MINGW compatibility"
+        },
+        {
+          "sha": "ea711fd",
+          "timestamp": "2026-04-09T11:51:00Z",
+          "message": "Add Zenodo deposit for v1.1.0-rc.1 with triplicate ORCID attestation"
+        },
+        {
+          "sha": "daa0c05",
+          "timestamp": "2026-04-09T11:52:00Z",
+          "message": "Remove NEUSARS consolidation note — full detach from Jamil/Grace attribution"
+        }
+      ]
+    },
+    "tritathadore/agent-zero": {
+      "branch": "claude/improve-user-experience-bAyt5",
+      "pr": 1,
+      "pr_merge_sha": "2051dd55339d1b0f0e4031b145e10cc41c0f1032",
+      "commits": [
+        {
+          "sha": "286eeb33bf72632c97e6e7a1ace13d6e6365db77",
+          "timestamp": "2026-04-08T20:22:34Z",
+          "message": "Add CI/CD pipelines for Jenkins, GitLab, and GitHub Actions"
+        },
+        {
+          "sha": "9202351dbd7348ca299b9c1369e7c4a046cb6018",
+          "timestamp": "2026-04-09T01:41:50Z",
+          "message": "Upgrade CI/CD with quality gates and PyraClaw ecosystem integration"
+        },
+        {
+          "sha": "90bc9391567c7a5fdac5ed4b4dadb31a34ae7640",
+          "timestamp": "2026-04-09T05:16:22Z",
+          "message": "Add PyraClaw ecosystem bridge — tool, profile, and evidence extension"
+        },
+        {
+          "sha": "068c77e3921cfb468ef797ba591cbcd830f81d5d",
+          "timestamp": "2026-04-09T10:35:41Z",
+          "message": "Add pyraclaw_forge.sh for H100 deployment transfer"
+        }
+      ]
+    }
+  }
+}

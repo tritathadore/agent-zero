@@ -1,0 +1,115 @@
+{
+  "forge_event": "Diamond Army — NVIDIA H100 PCIe",
+  "machine": {
+    "hostname": "shadecloud",
+    "brev_id": "h8f02ie72",
+    "instance": "enterprise--pyraclaw-rag-f88f75",
+    "gpu": "NVIDIA H100 PCIe",
+    "vram_mib": 81559,
+    "cpu": "AMD EPYC 9554 64-Core / 28 cores",
+    "ram_gb": 177,
+    "os": "Ubuntu 22.04.5 LTS",
+    "kernel": "6.8.0-90-generic",
+    "gpu_driver": "570.195.03",
+    "cuda": "13.1",
+    "ip": "185.216.21.216",
+    "provider": "Shadeform via Brev.dev"
+  },
+  "forged_at": "2026-04-09T10:37:10Z",
+  "forge_duration_seconds": 1,
+  "agents": [
+    {
+      "name": "LightningClaw",
+      "role": "orchestrator",
+      "gpu": "H100",
+      "port": 8101,
+      "pid": 1138663,
+      "service_lines": 376,
+      "qdp_sha256": "aa6616046e4d76843cccb01bbc151a16",
+      "status": "operational"
+    },
+    {
+      "name": "CodeClaw",
+      "role": "worker",
+      "gpu": "A6000",
+      "port": 8102,
+      "pid": 1138686,
+      "service_lines": 379,
+      "qdp_sha256": "c190f9f48b3445d83e38c6ed004a9822",
+      "status": "operational"
+    },
+    {
+      "name": "CharismaClaw",
+      "role": "bridge",
+      "gpu": "A4000",
+      "port": 8103,
+      "pid": 1138715,
+      "service_lines": 376,
+      "qdp_sha256": "19dce04c54dc081aa31f8a738fdc0308",
+      "status": "operational"
+    },
+    {
+      "name": "GuardianClaw",
+      "role": "guardian",
+      "gpu": "A6000",
+      "port": 8104,
+      "pid": 1138748,
+      "service_lines": 377,
+      "qdp_sha256": "9d8187b270ce968574034b18a4c04a7c",
+      "status": "operational"
+    },
+    {
+      "name": "EvidenceClaw",
+      "role": "validator",
+      "gpu": "H100",
+      "port": 8105,
+      "pid": 1138771,
+      "service_lines": 397,
+      "qdp_sha256": "8bada30e240543040ecd2a1222e24da7",
+      "status": "operational"
+    },
+    {
+      "name": "ScoutClaw",
+      "role": "scout",
+      "gpu": "H100",
+      "port": 8106,
+      "pid": 1138794,
+      "service_lines": 382,
+      "qdp_sha256": "28ebab5ce03d6688d2d1355b964443b5",
+      "status": "operational"
+    },
+    {
+      "name": "AnalystClaw",
+      "role": "analyst",
+      "gpu": "A4000",
+      "port": 8107,
+      "pid": 1138817,
+      "service_lines": 404,
+      "qdp_sha256": "5533ab97b71f72e1be70188cf130f7ee",
+      "status": "operational"
+    },
+    {
+      "name": "CortexClaw",
+      "role": "cortex",
+      "gpu": "A4000",
+      "port": 8108,
+      "pid": 1138840,
+      "service_lines": 379,
+      "qdp_sha256": "0bb104cf3b5fd7168f57d745dbaf558e",
+      "status": "operational"
+    }
+  ],
+  "health_check": {
+    "timestamp": "2026-04-09T10:37:19Z",
+    "total": 8,
+    "operational": 8,
+    "result": "8/8 agents operational"
+  },
+  "governance": {
+    "patent": "PCT/EP2025/080977",
+    "patent_us": "US 19/541,276",
+    "orcid_byron": "0009-0001-9561-5483",
+    "orcid_pyraclaw": "0009-0003-9584-1741",
+    "qdp_super_hash": "9146ce69652472be6ab914e84d2ff76fa64b6ae71c19a0365858c73ee68cda88"
+  }
+}

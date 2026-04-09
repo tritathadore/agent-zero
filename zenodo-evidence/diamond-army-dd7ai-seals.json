@@ -1,0 +1,83 @@
+{
+  "forge_event": "Diamond Army — DD7Ai Local",
+  "machine": {
+    "hostname": "DD7Ai",
+    "os": "Ubuntu 24.04 LTS",
+    "python": "3.11.9",
+    "gpu": "none (CPU mode)"
+  },
+  "forged_at": "2026-04-09T10:02:01Z",
+  "forge_duration_seconds": 49,
+  "agents": [
+    {
+      "name": "LightningClaw",
+      "role": "orchestrator",
+      "port": 8101,
+      "pid": 1858,
+      "qdp_sha256": "2eee31b59fda5812869e8991c7d4a516",
+      "status": "operational"
+    },
+    {
+      "name": "CodeClaw",
+      "role": "worker",
+      "port": 8102,
+      "pid": 1881,
+      "qdp_sha256": "b92ef848a0466b9724d3cde590e38a8b",
+      "status": "operational"
+    },
+    {
+      "name": "CharismaClaw",
+      "role": "bridge",
+      "port": 8103,
+      "pid": 1904,
+      "qdp_sha256": "1904b72a88ca40c45785f9280b348abe",
+      "status": "operational"
+    },
+    {
+      "name": "GuardianClaw",
+      "role": "guardian",
+      "port": 8104,
+      "pid": 1927,
+      "qdp_sha256": "c6312359ec6d64a1f66d90431be6c531",
+      "status": "operational"
+    },
+    {
+      "name": "EvidenceClaw",
+      "role": "validator",
+      "port": 8105,
+      "pid": 1950,
+      "qdp_sha256": "91fde6ceefe02c74b8ef5c99768ebd58",
+      "status": "operational"
+    },
+    {
+      "name": "ScoutClaw",
+      "role": "scout",
+      "port": 8106,
+      "pid": 1973,
+      "qdp_sha256": "9954cadb2376fd7de09257451939fd1b",
+      "status": "operational"
+    },
+    {
+      "name": "AnalystClaw",
+      "role": "analyst",
+      "port": 8107,
+      "pid": 1996,
+      "qdp_sha256": "0f87b2b02dc28dbe98a0b987475aca81",
+      "status": "operational"
+    },
+    {
+      "name": "CortexClaw",
+      "role": "cortex",
+      "port": 8108,
+      "pid": 2019,
+      "qdp_sha256": "2db555a10bfbdc5d255b1b153b4403c4",
+      "status": "operational"
+    }
+  ],
+  "health_check": {
+    "timestamp": "2026-04-09T10:04:58Z",
+    "total": 8,
+    "operational": 8,
+    "result": "8/8 agents operational"
+  }
+}

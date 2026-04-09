@@ -1,0 +1,65 @@
+{
+  "deposit": {
+    "id": 19482963,
+    "doi": "10.5281/zenodo.19482963",
+    "version": "1.1.0-rc.1",
+    "status": "draft",
+    "url": "https://zenodo.org/deposit/19482963",
+    "created_at": "2026-04-09T10:50:00Z"
+  },
+  "orcid_attestation": {
+    "creator": {
+      "name": "Byron Callaghan",
+      "orcid": "0009-0001-9561-5483",
+      "role": "creator"
+    },
+    "system": {
+      "name": "PyraClaw iAiA",
+      "orcid": "0009-0003-9584-1741",
+      "role": "system_entity"
+    },
+    "cross_reference": {
+      "orcid_1_in_creators": true,
+      "orcid_2_in_creators": true,
+      "orcid_1_in_notes": true,
+      "orcid_2_in_notes": true,
+      "orcid_1_in_related_ids": true,
+      "orcid_2_in_related_ids": true,
+      "triplicate_complete": true
+    }
+  },
+  "governance": {
+    "patent": "PCT/EP2025/080977",
+    "patent_us": "US 19/541,276",
+    "qdp_super_hash": "9146ce69652472be6ab914e84d2ff76fa64b6ae71c19a0365858c73ee68cda88",
+    "license": "Apache-2.0",
+    "ip_terms": "Licensing only. No IP transfer."
+  },
+  "qdp_seal": {
+    "sha256": "48be4aa59ddac79906f4baa59a93c61a5966960d1bcafe99",
+    "sha512": "f14a2ec582a22d7e648c4730a6f582655d6a408e931a27f4",
+    "sha3_256": "1bb81387711dcb3adebe4d44b58a8c74edcc358a28c52e5a",
+    "hmac_sha256": "2646e0747639e4ac6f83b4a9ca247c223b39d3278600ece1"
+  },
+  "session": {
+    "id": "session_01LoCMvLu3iSSaB4gFuZsLde",
+    "duration_hours": 14.5,
+    "date": "2026-04-08/2026-04-09",
+    "auditor": "Claude Opus 4.6 (1M context)"
+  },
+  "deliverables": {
+    "files_created": 14,
+    "lines_of_code": 5158,
+    "commits": 10,
+    "prs_merged": 2,
+    "agents_forged": 8,
+    "machines_deployed": 2,
+    "gpu_verified": "NVIDIA H100 PCIe 81559 MiB"
+  },
+  "scope_limitations": [
+    "Infrastructure services not deployed (Swarm Manager, Evidence Ledger, RSFS Core, Freedom Engine)",
+    "NemoClaw GPU inference cluster not activated",
+    "No end-to-end task execution; agents verified at health/identity level",
+    "No overclaiming. Results-driven. Evidence-first."
+  ]
+}
