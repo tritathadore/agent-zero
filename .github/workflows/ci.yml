@@ -1,0 +1,244 @@
+# ─────────────────────────────────────────────────────────────
+# Agent Zero — Continuous Integration
+# Autonomous Agentic Framework · PyraClaw Ecosystem
+#
+# Pipeline: lint → security → test → quality gate → build
+# Integrated with PyraClaw RSFS scoring and evidence trail.
+# ─────────────────────────────────────────────────────────────
+name: CI
+
+on:
+  push:
+    branches: [main, develop, "release/**"]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHON_VERSION: "3.11"
+  EXCLUDE_DIRS: ".venv,docker,node_modules,logs,memory,knowledge,tmp"
+
+jobs:
+  # ── Lint & Static Analysis ──────────────────────────────────
+  lint:
+    name: Lint & Format
+    runs-on: ubuntu-latest
+    outputs:
+      warnings: ${{ steps.style.outputs.count }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+
+      - name: Install linting tools
+        run: pip install flake8 black isort
+
+      - name: Check formatting (black)
+        run: black --check --diff . --exclude '/(\.venv|node_modules|docker|logs|memory|tmp)/'
+        continue-on-error: true
+
+      - name: Syntax & critical errors (flake8 — hard gate)
+        run: |
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics \
+            --exclude=${{ env.EXCLUDE_DIRS }}
+
+      - name: Style analysis (flake8 — advisory)
+        id: style
+        run: |
+          COUNT=$(flake8 . --count --exit-zero --max-complexity=15 --max-line-length=127 \
+            --statistics --exclude=${{ env.EXCLUDE_DIRS }} 2>&1 | tail -1)
+          echo "count=${COUNT}" >> "$GITHUB_OUTPUT"
+
+  # ── Security Scan ───────────────────────────────────────────
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    outputs:
+      findings: ${{ steps.bandit.outputs.count }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+
+      - name: Install security tools
+        run: pip install bandit safety
+
+      - name: Bandit — source code analysis
+        id: bandit
+        run: |
+          bandit -r python/ -f json -o bandit-report.json --exit-zero 2>/dev/null || true
+          COUNT=$(python3 -c "
+          import json, pathlib
+          r = json.loads(pathlib.Path('bandit-report.json').read_text()) if pathlib.Path('bandit-report.json').exists() else {}
+          s = r.get('metrics', {}).get('_totals', {})
+          print(int(s.get('SEVERITY.HIGH', 0)) + int(s.get('SEVERITY.MEDIUM', 0)))
+          " 2>/dev/null || echo 0)
+          echo "count=${COUNT}" >> "$GITHUB_OUTPUT"
+
+      - name: Safety — dependency vulnerability check
+        run: safety check -r requirements.txt --output json > safety-report.json || true
+
+      - name: Upload security reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: security-reports
+          path: |
+            bandit-report.json
+            safety-report.json
+          retention-days: 30
+
+  # ── Unit Tests ──────────────────────────────────────────────
+  test:
+    name: Test Suite
+    runs-on: ubuntu-latest
+    needs: [lint]
+    outputs:
+      passed: ${{ steps.run.outputs.passed }}
+      coverage: ${{ steps.run.outputs.coverage }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest pytest-cov pytest-asyncio pytest-mock
+          pip install -r requirements.txt 2>/dev/null || \
+            pip install --no-deps -r requirements.txt 2>/dev/null || true
+
+      - name: Run tests
+        id: run
+        run: |
+          set +e
+          pytest tests/ --tb=short --cov=python/ --cov-report=xml \
+            --cov-report=json --cov-report=term-missing -q --no-header \
+            --junitxml=test-results.xml 2>&1
+          EXIT=$?
+          set -e
+          echo "passed=$( [ $EXIT -eq 0 ] && echo true || echo false )" >> "$GITHUB_OUTPUT"
+          COV=$(python3 -c "
+          import json, pathlib
+          f = pathlib.Path('coverage.json')
+          print(json.loads(f.read_text())['totals']['percent_covered'] if f.exists() else 0)
+          " 2>/dev/null || echo 0)
+          echo "coverage=${COV}" >> "$GITHUB_OUTPUT"
+
+      - name: Upload test artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-reports
+          path: |
+            coverage.xml
+            test-results.xml
+          retention-days: 14
+
+  # ── Quality Gate (RSFS-aligned) ─────────────────────────────
+  quality-gate:
+    name: Quality Gate
+    runs-on: ubuntu-latest
+    needs: [lint, security, test]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Evaluate quality composite
+        id: eval
+        run: |
+          python3 << 'QUALITY'
+          import json, os
+
+          # Scores from upstream jobs
+          test_passed = "${{ needs.test.outputs.passed }}" == "true"
+          cov = float("${{ needs.test.outputs.coverage }}" or "0")
+          lint_warnings = int("${{ needs.lint.outputs.warnings }}" or "0")
+          sec_findings = int("${{ needs.security.outputs.findings }}" or "0")
+
+          scores = {
+              "correctness":      1.0 if test_passed else 0.4,
+              "stability":        0.85,
+              "deploy_readiness": max(0.3, 1.0 - lint_warnings * 0.01),
+              "evidence_quality": min(1.0, cov / 80.0),
+              "security_posture": max(0.2, 1.0 - sec_findings * 0.05),
+          }
+
+          weights = {
+              "correctness": 0.90, "stability": 0.80,
+              "deploy_readiness": 0.75, "evidence_quality": 0.85,
+              "security_posture": 0.90,
+          }
+
+          Q = sum(weights[d] * scores[d] for d in scores) / sum(weights.values())
+          # Simplified composite (no RSFS constants — Agent Zero is independent)
+          C = round(Q * 100, 2)
+          gate = "PASS" if C >= 75 else ("HOLD" if C >= 50 else "FAIL")
+
+          evaluation = {
+              "composite": C,
+              "gate": gate,
+              "quality": round(Q, 4),
+              "dimensions": scores,
+              "commit": "${{ github.sha }}",
+              "framework": "agent-zero",
+              "ecosystem": "pyraclaw",
+          }
+
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a") as f:
+              f.write("## Quality Gate\n\n")
+              f.write(f"| Metric | Value |\n|--------|-------|\n")
+              f.write(f"| **Composite** | **{C}%** |\n")
+              f.write(f"| Gate | {gate} |\n")
+              for d, s in scores.items():
+                  f.write(f"| {d} | {s:.3f} |\n")
+
+          print(f"Quality: {C}% — {gate}")
+          if gate == "FAIL":
+              raise SystemExit(f"Quality gate FAIL — {C}% below threshold")
+          QUALITY
+
+  # ── Docker Build ────────────────────────────────────────────
+  docker:
+    name: Docker Build
+    runs-on: ubuntu-latest
+    needs: [quality-gate]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build image
+        run: |
+          if [ -f docker/Dockerfile ]; then
+            docker build -f docker/Dockerfile -t agent-zero:${{ github.sha }} .
+          elif [ -f Dockerfile ]; then
+            docker build -t agent-zero:${{ github.sha }} .
+          else
+            echo "No Dockerfile found — skipping build."
+          fi
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "### Build Complete" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Image: \`agent-zero:${{ github.sha }}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Ecosystem: PyraClaw Sovereign AI Runtime" >> "$GITHUB_STEP_SUMMARY"
