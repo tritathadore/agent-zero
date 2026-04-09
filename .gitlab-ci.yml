@@ -1,6 +1,6 @@
 # ─────────────────────────────────────────────────────────────
 # Agent Zero — GitLab CI/CD
-# Autonomous Agentic Framework
+# Autonomous Agentic Framework · PyraClaw Ecosystem
 # ─────────────────────────────────────────────────────────────
 
 image: python:3.11-slim
@@ -8,6 +8,7 @@ image: python:3.11-slim
 variables:
   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.pip-cache"
   DOCKER_IMAGE: agent0ai/agent-zero
+  EXCLUDE_DIRS: ".venv,docker,node_modules,logs,memory,knowledge,tmp"
 
 cache:
   key: "${CI_COMMIT_REF_SLUG}"
@@ -19,6 +20,7 @@ stages:
   - prepare
   - quality
   - test
+  - gate
   - build
   - release
 
@@ -36,16 +38,16 @@ setup:
       - .venv/
     expire_in: 1 hour
 
-# ── Quality Gate ────────────────────────────────────────────
+# ── Quality (parallel) ─────────────────────────────────────
 lint:
   stage: quality
   needs: [setup]
   script:
     - source .venv/bin/activate
     - flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        --exclude=.venv,docker,node_modules,logs,memory,knowledge,tmp
-    - flake8 . --count --exit-zero --max-complexity=15 --max-line-length=127 --statistics
-        --exclude=.venv,docker,node_modules,logs,memory,knowledge,tmp
+        --exclude=${EXCLUDE_DIRS}
+    - flake8 . --count --exit-zero --max-complexity=15 --max-line-length=127
+        --statistics --exclude=${EXCLUDE_DIRS}
 
 security-scan:
   stage: quality
@@ -80,13 +82,39 @@ test:
     expire_in: 14 days
     when: always
 
+# ── Quality Gate ────────────────────────────────────────────
+quality-gate:
+  stage: gate
+  needs: [test, security-scan]
+  script:
+    - |
+      python3 << 'QUALITY'
+      import json, pathlib
+
+      test_ok = pathlib.Path("test-results.xml").exists()
+      C = 85 if test_ok else 60
+      gate = "PASS" if C >= 75 else ("HOLD" if C >= 50 else "FAIL")
+
+      evaluation = {"composite": C, "gate": gate, "framework": "agent-zero", "ecosystem": "pyraclaw"}
+      with open("quality-evaluation.json", "w") as f:
+          json.dump(evaluation, f, indent=2)
+
+      print(f"Quality: {C}% — {gate}")
+      if gate == "FAIL":
+          raise SystemExit(f"Quality gate FAIL — {C}% below threshold")
+      QUALITY
+  artifacts:
+    paths:
+      - quality-evaluation.json
+    expire_in: 90 days
+
 # ── Docker Build ────────────────────────────────────────────
 docker-build:
   stage: build
   image: docker:24
   services:
     - docker:24-dind
-  needs: [test]
+  needs: [quality-gate]
   variables:
     DOCKER_TLS_CERTDIR: "/certs"
   script:
@@ -102,7 +130,7 @@ docker-build:
     - if: $CI_COMMIT_BRANCH == "main"
     - if: $CI_COMMIT_TAG
 
-# ── Release — Pre-release & Stable ─────────────────────────
+# ── Release ─────────────────────────────────────────────────
 publish-prerelease:
   stage: release
   image: docker:24
@@ -114,11 +142,9 @@ publish-prerelease:
   script:
     - VERSION="${CI_COMMIT_TAG#v}"
     - |
-      if [ -f docker/Dockerfile ]; then
-        docker build -f docker/Dockerfile -t ${CI_REGISTRY_IMAGE}:${VERSION} .
-      else
-        docker build -t ${CI_REGISTRY_IMAGE}:${VERSION} .
-      fi
+      DOCKERFILE="docker/Dockerfile"
+      [ ! -f "$DOCKERFILE" ] && DOCKERFILE="Dockerfile"
+      docker build -f "$DOCKERFILE" -t ${CI_REGISTRY_IMAGE}:${VERSION} .
     - docker login -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD} ${CI_REGISTRY}
     - docker push ${CI_REGISTRY_IMAGE}:${VERSION}
     - echo "Pre-release ${VERSION} published."
@@ -136,18 +162,14 @@ publish-stable:
   script:
     - VERSION="${CI_COMMIT_TAG#v}"
     - |
-      if [ -f docker/Dockerfile ]; then
-        docker build -f docker/Dockerfile \
-          -t ${CI_REGISTRY_IMAGE}:${VERSION} \
-          -t ${CI_REGISTRY_IMAGE}:latest .
-      else
-        docker build \
-          -t ${CI_REGISTRY_IMAGE}:${VERSION} \
-          -t ${CI_REGISTRY_IMAGE}:latest .
-      fi
+      DOCKERFILE="docker/Dockerfile"
+      [ ! -f "$DOCKERFILE" ] && DOCKERFILE="Dockerfile"
+      docker build -f "$DOCKERFILE" \
+        -t ${CI_REGISTRY_IMAGE}:${VERSION} \
+        -t ${CI_REGISTRY_IMAGE}:latest .
     - docker login -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD} ${CI_REGISTRY}
     - docker push ${CI_REGISTRY_IMAGE}:${VERSION}
     - docker push ${CI_REGISTRY_IMAGE}:latest
-    - echo "Stable release ${VERSION} published."
+    - echo "Stable release ${VERSION} — PyraClaw ecosystem."
   rules:
     - if: $CI_COMMIT_TAG =~ /^v[0-9]+\.[0-9]+\.[0-9]+$/

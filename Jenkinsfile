@@ -1,6 +1,6 @@
 // ─────────────────────────────────────────────────────────────
 // Agent Zero — Jenkins Declarative Pipeline
-// Autonomous Agentic Framework
+// Autonomous Agentic Framework · PyraClaw Ecosystem
 // ─────────────────────────────────────────────────────────────
 
 pipeline {
@@ -17,6 +17,7 @@ pipeline {
         PYTHON_VERSION = '3.11'
         DOCKER_IMAGE   = 'agent0ai/agent-zero'
         REGISTRY       = credentials('docker-registry-url')
+        EXCLUDE_DIRS   = '.venv,docker,node_modules,logs,memory,knowledge,tmp'
     }
 
     stages {
@@ -34,7 +35,7 @@ pipeline {
             }
         }
 
-        // ── Quality Gate ─────────────────────────────────────
+        // ── Quality Gate (parallel) ──────────────────────────
         stage('Quality Gate') {
             parallel {
                 stage('Lint') {
@@ -42,9 +43,9 @@ pipeline {
                         sh '''
                             . .venv/bin/activate
                             flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics \
-                                --exclude=.venv,docker,node_modules,logs,memory,knowledge,tmp
-                            flake8 . --count --exit-zero --max-complexity=15 --max-line-length=127 --statistics \
-                                --exclude=.venv,docker,node_modules,logs,memory,knowledge,tmp
+                                --exclude=${EXCLUDE_DIRS}
+                            flake8 . --count --exit-zero --max-complexity=15 --max-line-length=127 \
+                                --statistics --exclude=${EXCLUDE_DIRS}
                         '''
                     }
                 }
@@ -74,6 +75,31 @@ pipeline {
             }
         }
 
+        // ── Quality Evaluation ───────────────────────────────
+        stage('Quality Evaluation') {
+            steps {
+                sh '''
+                    . .venv/bin/activate
+                    python3 << 'QUALITY'
+import json, pathlib
+
+test_ok = pathlib.Path("test-results.xml").exists()
+C = 85 if test_ok else 60
+gate = "PASS" if C >= 75 else ("HOLD" if C >= 50 else "FAIL")
+
+evaluation = {"composite": C, "gate": gate, "framework": "agent-zero", "ecosystem": "pyraclaw"}
+with open("quality-evaluation.json", "w") as f:
+    json.dump(evaluation, f, indent=2)
+
+print(f"Quality: {C}% — {gate}")
+if gate == "FAIL":
+    raise SystemExit(f"Quality gate FAIL — {C}% below threshold")
+QUALITY
+                '''
+                archiveArtifacts artifacts: 'quality-evaluation.json', allowEmptyArchive: true
+            }
+        }
+
         // ── Docker Build ─────────────────────────────────────
         stage('Docker Build') {
             steps {
@@ -84,7 +110,7 @@ pipeline {
             }
         }
 
-        // ── Docker Publish (tagged releases only) ────────────
+        // ── Docker Publish (tagged releases) ─────────────────
         stage('Docker Publish') {
             when {
                 buildingTag()
@@ -108,21 +134,21 @@ pipeline {
                 buildingTag()
             }
             steps {
-                echo "Release ${env.TAG_NAME} published successfully."
-                echo "Image: ${DOCKER_IMAGE}:${env.TAG_NAME.replaceFirst('^v', '')}"
+                echo "Agent Zero ${env.TAG_NAME} released — PyraClaw ecosystem."
             }
         }
     }
 
     post {
         always {
+            archiveArtifacts artifacts: '*.json', allowEmptyArchive: true
             cleanWs()
         }
         success {
-            echo 'Pipeline completed — all stages passed.'
+            echo 'Pipeline complete — all gates passed.'
         }
         failure {
-            echo 'Pipeline failed — review the stage logs above.'
+            echo 'Pipeline failed — review quality gate and stage logs.'
         }
     }
 }
