@@ -1,5 +1,5 @@
 # ─────────────────────────────────────────────────────────────
-# Agent Zero — GitLab CI/CD
+# Pyraclaw — GitLab CI/CD
 # Autonomous Agentic Framework · PyraClaw Ecosystem
 # ─────────────────────────────────────────────────────────────
 
@@ -7,7 +7,7 @@ image: python:3.11-slim
 
 variables:
   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.pip-cache"
-  DOCKER_IMAGE: agent0ai/agent-zero
+  DOCKER_IMAGE: pyraclaw/pyraclaw
   EXCLUDE_DIRS: ".venv,docker,node_modules,logs,memory,knowledge,tmp"
 
 cache:
@@ -95,7 +95,7 @@ quality-gate:
       C = 85 if test_ok else 60
       gate = "PASS" if C >= 75 else ("HOLD" if C >= 50 else "FAIL")
 
-      evaluation = {"composite": C, "gate": gate, "framework": "agent-zero", "ecosystem": "pyraclaw"}
+      evaluation = {"composite": C, "gate": gate, "framework": "pyraclaw", "ecosystem": "pyraclaw"}
       with open("quality-evaluation.json", "w") as f:
           json.dump(evaluation, f, indent=2)
 

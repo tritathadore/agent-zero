@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ════════════════════════════════════════════════════════════════════════════════
 #  PyraClaw Forge v2.0.0 — Diamond Army Deployment System
-#  DD7 International GmbH  |  Patent PCT/EP2025/080977 | US 19/541,276
+#  Byron Callaghan / Pyraclaw  |  Patent PCT/EP2025/080977 | US 19/541,276
 #  ORCID: 0009-0001-9561-5483 (Byron Callaghan)
 #
 #  Forges, deploys, and manages the 8-agent Diamond Army across a Brev.dev
@@ -122,7 +122,7 @@ banner() {
   echo -e "${C_GOLD}  ╔══════════════════════════════════════════════════════════════════════╗${C_RESET}"
   echo -e "${C_GOLD}  ║                                                                      ║${C_RESET}"
   echo -e "${C_GOLD}  ║${C_WHITE}${C_BOLD}   PyraClaw Forge${C_RESET}${C_PLAT}  Diamond Army Deployment System  ${C_DIM}v${FORGE_VERSION}${C_RESET}        ${C_GOLD}║${C_RESET}"
-  echo -e "${C_GOLD}  ║${C_STEEL}   DD7 International GmbH${C_RESET}${C_DIM}  Patent: ${PATENT}${C_RESET}           ${C_GOLD}║${C_RESET}"
+  echo -e "${C_GOLD}  ║${C_STEEL}   Byron Callaghan / Pyraclaw${C_RESET}${C_DIM}  Patent: ${PATENT}${C_RESET}           ${C_GOLD}║${C_RESET}"
   echo -e "${C_GOLD}  ║${C_DIM}   ORCID: ${ORCID}  |  QDP-Sealed  |  RSFS-Scored${C_RESET}          ${C_GOLD}║${C_RESET}"
   echo -e "${C_GOLD}  ║                                                                      ║${C_RESET}"
   echo -e "${C_GOLD}  ╚══════════════════════════════════════════════════════════════════════╝${C_RESET}"
@@ -271,7 +271,7 @@ generate_agent_service() {
 """
 ${name} Agent Service — PyraClaw Diamond Army
 Role: ${AGENT_ROLE} | GPU: ${AGENT_GPU} | Port: ${AGENT_PORT}
-DD7 International GmbH | Patent: ${PATENT}
+Byron Callaghan / Pyraclaw | Patent: ${PATENT}
 ORCID: ${ORCID}
 """
 
@@ -1807,7 +1807,7 @@ show_help() {
   echo -e "  ${C_PLAT}bash pyraclaw_forge.sh logs ScoutClaw 100${C_RESET}    ${C_DIM}# Last 100 log lines${C_RESET}"
   echo ""
 
-  echo -e "  ${C_DIM}DD7 International GmbH | Patent: ${PATENT} | ${PATENT_US}${C_RESET}"
+  echo -e "  ${C_DIM}Byron Callaghan / Pyraclaw | Patent: ${PATENT} | ${PATENT_US}${C_RESET}"
   echo -e "  ${C_DIM}ORCID: ${ORCID} | QDP Super Hash: ${QDP_SUPER_HASH:0:32}...${C_RESET}"
   echo ""
 }

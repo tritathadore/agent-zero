@@ -44,7 +44,7 @@
         }
       ]
     },
-    "tritathadore/agent-zero": {
+    "tritathadore/pyraclaw": {
       "branch": "claude/improve-user-experience-bAyt5",
       "pr": 1,
       "pr_merge_sha": "2051dd55339d1b0f0e4031b145e10cc41c0f1032",

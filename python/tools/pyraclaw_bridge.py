@@ -23,7 +23,7 @@ REQUEST_TIMEOUT = aiohttp.ClientTimeout(total=10)
 
 
 class PyraclawBridge(Tool):
-    """Bridge tool connecting Agent Zero to the PyraClaw ecosystem.
+    """Bridge tool connecting Pyraclaw to the PyraClaw ecosystem.
 
     Supports three actions:
       - seal_evidence: Create a QDP-sealed evidence record via the Evidence Ledger.
@@ -95,7 +95,7 @@ class PyraclawBridge(Tool):
         register_payload = {
             "agent_name": self.agent.agent_name,
             "agent_number": self.agent.number,
-            "framework": "agent-zero",
+            "framework": "pyraclaw",
             "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 

@@ -1,7 +1,7 @@
 {
-  "forge_event": "Diamond Army — DD7Ai Local",
+  "forge_event": "Diamond Army — Pyraclaw Local",
   "machine": {
-    "hostname": "DD7Ai",
+    "hostname": "Pyraclaw",
     "os": "Ubuntu 24.04 LTS",
     "python": "3.11.9",
     "gpu": "none (CPU mode)"

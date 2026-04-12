@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────
-// Agent Zero — Jenkins Declarative Pipeline
+// Pyraclaw — Jenkins Declarative Pipeline
 // Autonomous Agentic Framework · PyraClaw Ecosystem
 // ─────────────────────────────────────────────────────────────
 
@@ -15,7 +15,7 @@ pipeline {
 
     environment {
         PYTHON_VERSION = '3.11'
-        DOCKER_IMAGE   = 'agent0ai/agent-zero'
+        DOCKER_IMAGE   = 'pyraclaw/pyraclaw'
         REGISTRY       = credentials('docker-registry-url')
         EXCLUDE_DIRS   = '.venv,docker,node_modules,logs,memory,knowledge,tmp'
     }
@@ -87,7 +87,7 @@ test_ok = pathlib.Path("test-results.xml").exists()
 C = 85 if test_ok else 60
 gate = "PASS" if C >= 75 else ("HOLD" if C >= 50 else "FAIL")
 
-evaluation = {"composite": C, "gate": gate, "framework": "agent-zero", "ecosystem": "pyraclaw"}
+evaluation = {"composite": C, "gate": gate, "framework": "pyraclaw", "ecosystem": "pyraclaw"}
 with open("quality-evaluation.json", "w") as f:
     json.dump(evaluation, f, indent=2)
 
@@ -134,7 +134,7 @@ QUALITY
                 buildingTag()
             }
             steps {
-                echo "Agent Zero ${env.TAG_NAME} released — PyraClaw ecosystem."
+                echo "Pyraclaw ${env.TAG_NAME} released — PyraClaw ecosystem."
             }
         }
     }

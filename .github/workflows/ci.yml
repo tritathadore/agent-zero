@@ -1,5 +1,5 @@
 # ─────────────────────────────────────────────────────────────
-# Agent Zero — Continuous Integration
+# Pyraclaw — Continuous Integration
 # Autonomous Agentic Framework · PyraClaw Ecosystem
 #
 # Pipeline: lint → security → test → quality gate → build
@@ -188,7 +188,7 @@ jobs:
           }
 
           Q = sum(weights[d] * scores[d] for d in scores) / sum(weights.values())
-          # Simplified composite (no RSFS constants — Agent Zero is independent)
+          # Simplified composite (no RSFS constants — Pyraclaw is independent)
           C = round(Q * 100, 2)
           gate = "PASS" if C >= 75 else ("HOLD" if C >= 50 else "FAIL")
 
@@ -198,7 +198,7 @@ jobs:
               "quality": round(Q, 4),
               "dimensions": scores,
               "commit": "${{ github.sha }}",
-              "framework": "agent-zero",
+              "framework": "pyraclaw",
               "ecosystem": "pyraclaw",
           }
 
@@ -229,9 +229,9 @@ jobs:
       - name: Build image
         run: |
           if [ -f docker/Dockerfile ]; then
-            docker build -f docker/Dockerfile -t agent-zero:${{ github.sha }} .
+            docker build -f docker/Dockerfile -t pyraclaw:${{ github.sha }} .
           elif [ -f Dockerfile ]; then
-            docker build -t agent-zero:${{ github.sha }} .
+            docker build -t pyraclaw:${{ github.sha }} .
           else
             echo "No Dockerfile found — skipping build."
           fi
@@ -240,5 +240,5 @@ jobs:
         if: always()
         run: |
           echo "### Build Complete" >> "$GITHUB_STEP_SUMMARY"
-          echo "- Image: \`agent-zero:${{ github.sha }}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Image: \`pyraclaw:${{ github.sha }}\`" >> "$GITHUB_STEP_SUMMARY"
           echo "- Ecosystem: PyraClaw Sovereign AI Runtime" >> "$GITHUB_STEP_SUMMARY"

@@ -1,5 +1,5 @@
 # ─────────────────────────────────────────────────────────────
-# Agent Zero — Release Pipeline
+# Pyraclaw — Release Pipeline
 # Autonomous Agentic Framework · PyraClaw Ecosystem
 #
 # Trigger: semver tag → v0.9.8, v1.0.0-rc.1, etc.
@@ -17,7 +17,7 @@ permissions:
 
 env:
   PYTHON_VERSION: "3.11"
-  DOCKER_IMAGE: agent0ai/agent-zero
+  DOCKER_IMAGE: pyraclaw/pyraclaw
 
 jobs:
   # ── Validate ────────────────────────────────────────────────
@@ -104,7 +104,7 @@ jobs:
             -f "$DOCKERFILE" \
             -t ghcr.io/${{ github.repository }}:${VERSION} \
             -t ghcr.io/${{ github.repository }}:latest \
-            --label "org.opencontainers.image.title=Agent Zero" \
+            --label "org.opencontainers.image.title=Pyraclaw" \
             --label "org.opencontainers.image.version=${VERSION}" \
             --label "com.pyraclaw.ecosystem=true" \
             --label "com.pyraclaw.quality=${{ needs.validate.outputs.quality }}" \
@@ -127,7 +127,7 @@ jobs:
           PREV_TAG=$(git tag --sort=-v:refname | grep -v "v${VERSION}" | head -1)
           {
             echo "body<<CHANGELOG_EOF"
-            echo "## Agent Zero v${VERSION}"
+            echo "## Pyraclaw v${VERSION}"
             echo ""
             echo "**Quality:** ${{ needs.validate.outputs.quality }}%"
             echo "**Ecosystem:** PyraClaw Sovereign AI Runtime"
@@ -148,7 +148,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ needs.validate.outputs.version }}
-          name: "Agent Zero v${{ needs.validate.outputs.version }}"
+          name: "Pyraclaw v${{ needs.validate.outputs.version }}"
           body: ${{ steps.changelog.outputs.body }}
           prerelease: ${{ needs.validate.outputs.prerelease }}
           generate_release_notes: true

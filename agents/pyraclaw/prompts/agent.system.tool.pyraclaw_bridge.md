@@ -1,5 +1,5 @@
 ### pyraclaw_bridge:
-Bridge to the PyraClaw ecosystem (DD7 International GmbH). Supports three actions:
+Bridge to the PyraClaw ecosystem (Byron Callaghan / Pyraclaw). Supports three actions:
 - **seal_evidence**: Seal content to the QDP Evidence Ledger. Requires "content" arg; optional "category" (default: agent_output).
 - **swarm_status**: Register with the Diamond Army Swarm Manager and retrieve current swarm status. No extra args required.
 - **quality_score**: Request an RSFS quality score for content. Requires "content" arg.

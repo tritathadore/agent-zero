@@ -1,8 +1,8 @@
-# Agent Zero Connectivity Guide
+# Pyraclaw Connectivity Guide
 
-This guide covers the different ways to connect to Agent Zero from external applications, including using the External API, connecting as an MCP client, and enabling agent-to-agent communication.
+This guide covers the different ways to connect to Pyraclaw from external applications, including using the External API, connecting as an MCP client, and enabling agent-to-agent communication.
 
-**Note:** You can find your specific URLs and API tokens in your Agent Zero instance under `Settings > External Services`.
+**Note:** You can find your specific URLs and API tokens in your Pyraclaw instance under `Settings > External Services`.
 
 ### API Token Information
 
@@ -12,11 +12,11 @@ The API token is automatically generated from your username and password. This s
 
 ## External API Endpoints
 
-Agent Zero provides external API endpoints for integration with other applications. These endpoints use API key authentication and support text messages and file attachments.
+Pyraclaw provides external API endpoints for integration with other applications. These endpoints use API key authentication and support text messages and file attachments.
 
 ### `POST /api_message`
 
-Send messages to Agent Zero and receive responses. Supports text messages, file attachments, and conversation continuity.
+Send messages to Pyraclaw and receive responses. Supports text messages, file attachments, and conversation continuity.
 
 ### API Reference
 
@@ -38,7 +38,7 @@ Send messages to Agent Zero and receive responses. Supports text messages, file 
 // Basic message example
 async function sendMessage() {
     try {
-        const response = await fetch('YOUR_AGENT_ZERO_URL/api_message', {
+        const response = await fetch('YOUR_PYRACLAW_URL/api_message', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -81,7 +81,7 @@ sendMessage().then(result => {
 // Continue conversation example
 async function continueConversation(contextId) {
     try {
-        const response = await fetch('YOUR_AGENT_ZERO_URL/api_message', {
+        const response = await fetch('YOUR_PYRACLAW_URL/api_message', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -131,7 +131,7 @@ async function sendWithAttachment() {
         const textContent = "Hello World from attachment!";
         const base64Content = btoa(textContent);
 
-        const response = await fetch('YOUR_AGENT_ZERO_URL/api_message', {
+        const response = await fetch('YOUR_PYRACLAW_URL/api_message', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -198,7 +198,7 @@ async function getLogsGET(contextId, length = 50) {
             length: length.toString()
         });
 
-        const response = await fetch('YOUR_AGENT_ZERO_URL/api_log_get?' + params, {
+        const response = await fetch('YOUR_PYRACLAW_URL/api_log_get?' + params, {
             method: 'GET',
             headers: {
                 'X-API-KEY': 'YOUR_API_KEY'
@@ -233,7 +233,7 @@ getLogsGET('ctx_abc123', 20);
 // Get logs using POST request
 async function getLogsPOST(contextId, length = 50) {
     try {
-        const response = await fetch('YOUR_AGENT_ZERO_URL/api_log_get', {
+        const response = await fetch('YOUR_PYRACLAW_URL/api_log_get', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -294,7 +294,7 @@ Terminate and remove a chat context to free up resources. Similar to the MCP `fi
 // Basic terminate chat function
 async function terminateChat(contextId) {
     try {
-        const response = await fetch('YOUR_AGENT_ZERO_URL/api_terminate_chat', {
+        const response = await fetch('YOUR_PYRACLAW_URL/api_terminate_chat', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -368,7 +368,7 @@ Reset a chat context to clear conversation history while keeping the `context_id
 // Basic reset chat function
 async function resetChat(contextId) {
     try {
-        const response = await fetch('YOUR_AGENT_ZERO_URL/api_reset_chat', {
+        const response = await fetch('YOUR_PYRACLAW_URL/api_reset_chat', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -410,7 +410,7 @@ async function resetAndContinue() {
         console.log('Chat reset, starting fresh conversation...');
 
         // Continue with same context_id but fresh history
-        const response = await fetch('YOUR_AGENT_ZERO_URL/api_message', {
+        const response = await fetch('YOUR_PYRACLAW_URL/api_message', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -455,7 +455,7 @@ Retrieve file contents by paths, returning files as base64 encoded data. Useful 
 // Basic file retrieval
 async function getFiles(filePaths) {
     try {
-        const response = await fetch('YOUR_AGENT_ZERO_URL/api_files_get', {
+        const response = await fetch('YOUR_PYRACLAW_URL/api_files_get', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -503,7 +503,7 @@ getFiles(filePaths);
 // Example 2: Complete attachment workflow
 async function attachmentWorkflow() {
     // Step 1: Send message with attachments
-    const messageResponse = await fetch('YOUR_AGENT_ZERO_URL/api_message', {
+    const messageResponse = await fetch('YOUR_PYRACLAW_URL/api_message', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -540,7 +540,7 @@ attachmentWorkflow();
 
 ## MCP Server Connectivity
 
-Agent Zero includes an MCP Server that allows other MCP-compatible clients to connect to it. The server runs on the same URL and port as the Web UI.
+Pyraclaw includes an MCP Server that allows other MCP-compatible clients to connect to it. The server runs on the same URL and port as the Web UI.
 
 It provides two endpoint types:
 - **SSE (`/mcp/sse`):** For clients that support Server-Sent Events.
@@ -548,7 +548,7 @@ It provides two endpoint types:
 
 ### Example MCP Server Configuration
 
-Below is an example of a `mcp.json` configuration file that a client could use to connect to the Agent Zero MCP server. 
+Below is an example of a `mcp.json` configuration file that a client could use to connect to the Pyraclaw MCP server. 
 
 **Note:** You can find your personalized connection URLs under `Settings > MCP Server > MCP Server`.
 
@@ -556,13 +556,13 @@ Below is an example of a `mcp.json` configuration file that a client could use t
 {
     "mcpServers":
     {
-        "agent-zero": {
+        "pyraclaw": {
             "type": "sse",
-            "url": "YOUR_AGENT_ZERO_URL/mcp/t-YOUR_API_TOKEN/sse"
+            "url": "YOUR_PYRACLAW_URL/mcp/t-YOUR_API_TOKEN/sse"
         },
-        "agent-zero-http": {
+        "pyraclaw-http": {
             "type": "streamable-http",
-            "url": "YOUR_AGENT_ZERO_URL/mcp/t-YOUR_API_TOKEN/http/"
+            "url": "YOUR_PYRACLAW_URL/mcp/t-YOUR_API_TOKEN/http/"
         }
     }
 }
@@ -572,14 +572,14 @@ Below is an example of a `mcp.json` configuration file that a client could use t
 
 ## A2A (Agent-to-Agent) Connectivity
 
-Agent Zero's A2A Server enables communication with other agents using the FastA2A protocol. Other agents can connect to your instance using the connection URL.
+Pyraclaw's A2A Server enables communication with other agents using the FastA2A protocol. Other agents can connect to your instance using the connection URL.
 
 ### A2A Connection URL
 
-To connect another agent to your Agent Zero instance, use the following URL format. 
+To connect another agent to your Pyraclaw instance, use the following URL format. 
 
 **Note:** You can find your specific A2A connection URL under `Settings > External Services > A2A Connection`.
 
 ```
-YOUR_AGENT_ZERO_URL/a2a/t-YOUR_API_TOKEN
+YOUR_PYRACLAW_URL/a2a/t-YOUR_API_TOKEN
 ```

@@ -2,7 +2,7 @@
 
 **CI/CD Pipeline Suite with RSFS Quality Gates, QDP Evidence Sealing, and Diamond Army Agent Deployment System**
 
-DD7 International GmbH | Patent: PCT/EP2025/080977 | US 19/541,276
+Byron Callaghan / Pyraclaw | Patent: PCT/EP2025/080977 | US 19/541,276
 
 ## Authors
 
@@ -22,7 +22,7 @@ pyraclaw-v1.1.0-rc.1.zip     Source code archive
 evidence/
   deposit-manifest.json       Zenodo deposit metadata with QDP seal
   diamond-army-h100-seals.json  8 agent QDP capsules (NVIDIA H100)
-  diamond-army-dd7ai-seals.json 8 agent QDP capsules (DD7Ai local)
+  diamond-army-dd7ai-seals.json 8 agent QDP capsules (Pyraclaw local)
   session-commits.json        Complete git commit ledger
 ```
 
@@ -30,7 +30,7 @@ evidence/
 
 1. **CI/CD Pipelines** — GitHub Actions, Jenkins, GitLab CI with RSFS 8-dimension quality gates and QDP 4-layer evidence sealing
 2. **Diamond Army Forge** — pyraclaw_forge.sh v2.0.0 (1,921 lines) deploying 8 FastAPI agents across Brev.dev GPU fleet
-3. **Agent Zero Integration** — PyraClaw bridge tool, agent profile, evidence logging extension
+3. **Pyraclaw Integration** — PyraClaw bridge tool, agent profile, evidence logging extension
 
 ## Results
 
